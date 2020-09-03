@@ -1,17 +1,21 @@
+#!/usr/bin/env python3
+from time import sleep
 from typing import List
 
 import click
 
-# printer = "m-0164a-color3"
-from get_printer_list import get_printer_list
-from print_file import print_file
-from printer import Printer
+from src.get_printer_list import get_printer_list
+from src.print_file import print_file
+from src.printer import Printer
+
+sleep_time = 0.3
 
 
 @click.command()
 @click.option("-p", "--printer")
+@click.option("-n", "--pages", type=int, default=1)
 @click.argument("filename", type=click.Path(exists=True))
-def print_file_to_printer(filename, printer):
+def print_file_to_printer(filename, printer, pages):
     """"A simple program that prints the given file on the given chalmers printer"""
     printers = get_printer_list()
     if len(printers) == 0:
@@ -22,9 +26,18 @@ def print_file_to_printer(filename, printer):
         # Display list of printers.
         printer = select_printer(printers)
 
+    username = click.prompt("Enter your chalmers cid", type=str)
+    password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
+
     if printer_exists(printer, printers):
-        response = print_file(filename, printer)
-        click.echo(response)
+        for i in range(0, pages):
+            click.echo("Printing page {0}/{1}\r".format(i + 1, pages), nl=i == pages - 1)
+            msg, error = print_file(filename, printer, username, password)
+            if error:
+                click.echo(msg)
+                exit(-1)
+            sleep(sleep_time)
+        click.echo("Print successful!")
     else:
         click.echo("Invalid printer {0}".format(printer))
 
@@ -60,12 +73,8 @@ def select_printer(printers: List[Printer]) -> str:
             return printer_dict[printer_num].printer
 
 
-
 def printer_exists(printer, printers: List[Printer]) -> bool:
     for pr in printers:
         if pr.printer == printer:
             return True
     return False
-
-if __name__ == "__main__":
-    print_file_to_printer()
