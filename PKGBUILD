@@ -8,15 +8,12 @@ arch=("any")
 url="https://github.com/viddem/vprint"
 makedepends=("git")
 depends=("python>=3" "python-requests" "python-setuptools" "python-pip")
-source=("$pkgname-$pkgver::https://github.com/viddem/vprint.git")
+source=("$pkgname-$pkgver::git+$url.git#branch=feature/test-builds")
 sha256sums=("SKIP")
 
 build() {
-    ls
-    cd "$pkgname-$pkgver"
-    echo "-------------"
+    cd $pkgname-$pkgver
     ls 
-    pip install ./
 }
 
 package() {
