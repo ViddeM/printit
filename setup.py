@@ -1,17 +1,17 @@
 import setuptools
 
 setuptools.setup(
-    name="vprint",
+    name="printit",
     version="0.0.1",
     author="Vidar Magnusson",
-    author_email="vprint@vidarmagnusson.com",
+    author_email="printit@vidarmagnusson.com",
     description="A printing utiliy for chalmers university printers",
     long_description="",
-    url="https://github.com/viddem/vprint",
+    url="https://github.com/viddem/printit",
     packages=["src"],
     entry_points="""
     [console_scripts]
-    vprint = src.cli:print_file_to_printer
+    printit = src.cli:print_file_to_printer
     """,
     classifiers=[
         "Programming Language :: Python :: 3",
