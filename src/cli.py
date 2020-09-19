@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
-from time import sleep
 from typing import List
 
 import click
 
+from src.PrinterOptions import get_options
+from src.configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
 from src.get_printer_list import get_printer_list
-from src.print_file import print_file
+from src.print_via_ssh import print_via_ssh
 from src.printer import Printer
 
-sleep_time = 0.3
+
+def validate_page_split(ctx, param, page_split):
+    if page_split not in ALLOWED_PAGE_SPLITS:
+        raise click.BadParameter("page_split must be one of the following: {0}".format(ALLOWED_PAGE_SPLITS_STR))
+
+    return page_split
 
 
 @click.command()
-@click.option("-p", "--printer")
-@click.option("-n", "--pages", type=int, default=1)
+@click.option("-p", "--printer", help="The printer to print to")
+@click.option("-n", "--pages", type=int, default=1, help="Number of pages to print")
+@click.option("-g", "--gray-scale", is_flag=True, default=False, help="Print in grayscale")
+@click.option("-t", "--two-sided", is_flag=True, default=False, help="Print on both sides")
+@click.option("-w", "--wrap-short", is_flag=True, default=False, help="Wrap on the short-edge instead of long-edge (requires -t to work)")
+@click.option("-r", "--page-range", nargs=2, type=(int, int), default=(-1, -1), help="Which pages to print (example '--page-range=3-7')")
+@click.option("-s", "--page-split", type=int, callback=validate_page_split, default=1, help="How many pages that should fit on each paper, must be one of the following {0}".format(ALLOWED_PAGE_SPLITS_STR))
+@click.option("-l", "--landscape", is_flag=True, default=False, help="Print in landscape")
 @click.argument("filename", type=click.Path(exists=True))
-def print_file_to_printer(filename, printer, pages):
-    """"A simple program that prints the given file on the given chalmers printer"""
+def print_file_to_printer(filename, printer, pages, gray_scale, two_sided, wrap_short, page_range, page_split, landscape):
+    """A simple program that prints the given file on the given chalmers printer"""
     printers = get_printer_list()
     if len(printers) == 0:
         click.echo("Unable to retrieve any printers")
@@ -29,15 +41,17 @@ def print_file_to_printer(filename, printer, pages):
     username = click.prompt("Enter your chalmers cid", type=str)
     password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
 
+    options_res = get_options(pages, gray_scale, two_sided, wrap_short, page_range[0], page_range[1], page_split, landscape)
+    if options_res.is_error:
+        click.echo(options_res.message)
+        exit(0)
+
     if printer_exists(printer, printers):
-        for i in range(0, pages):
-            click.echo("Printing page {0}/{1}\r".format(i + 1, pages), nl=i == pages - 1)
-            msg, error = print_file(filename, printer, username, password)
-            if error:
-                click.echo(msg)
-                exit(-1)
-            sleep(sleep_time)
-        click.echo("Print successful!")
+        print_res = print_via_ssh(filename, printer, username, password, options_res.data)
+        if print_res.is_error:
+            click.echo("Failed to print: \n{0}".format(print_res.message))
+        else:
+            click.echo("Print successful!")
     else:
         click.echo("Invalid printer {0}".format(printer))
 
