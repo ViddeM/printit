@@ -5,6 +5,7 @@ from requests.auth import HTTPBasicAuth
 
 print_url = "https://print.chalmers.se/auth/uploadme.cgi"
 
+
 def print_file(filepath, printername, username, password) -> Tuple[str, bool]:
     with open(filepath, "rb") as file:
         headers = {

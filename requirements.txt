@@ -1,0 +1,5 @@
+click~=7.1.2
+requests~=2.24.0
+lxml~=4.5.2
+setuptools~=50.1.0
+paramiko~=2.7.2
