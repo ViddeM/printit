@@ -3,7 +3,7 @@ from typing import List
 import requests
 from lxml import etree
 
-from src.printer import Printer
+from printer import Printer
 
 
 def get_printer_list() -> List[Printer]:

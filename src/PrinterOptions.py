@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from src.ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
-from src.SidesEnum import SidesEnum
-from src.configuration import ALLOWED_PAGE_SPLITS
+from ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
+from SidesEnum import SidesEnum
+from configuration import ALLOWED_PAGE_SPLITS
 
 
 @dataclass

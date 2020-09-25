@@ -1,8 +1,8 @@
-from src.cli import print_file_to_printer
+from cli import cli
 
 
 def main():
-    print_file_to_printer()
+    cli()
 
 
 if __name__ == "__main__":
