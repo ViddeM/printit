@@ -2,9 +2,9 @@ import paramiko
 from paramiko import AuthenticationException, SSHException
 from scp import SCPClient
 
-from PrinterOptions import PrinterOptions
-from ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
-from configuration import SERVER, JOB_NAME, TO_PRINT_FILENAME, FALLBACK_SERVER
+from src.PrinterOptions import PrinterOptions
+from src.ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
+from src.configuration import SERVER, JOB_NAME, TO_PRINT_FILENAME, FALLBACK_SERVER
 
 
 def print_via_ssh(filename: str, printer_name: str, username: str, password: str, options: PrinterOptions) -> ResultWithData[bool]:

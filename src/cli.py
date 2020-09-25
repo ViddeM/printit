@@ -2,13 +2,13 @@
 from typing import List, Dict
 
 import click
+from src.PrinterOptions import get_options
 
-from PrinterOptions import get_options
-from ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
-from configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
-from get_printer_list import get_printer_list
-from print_via_ssh import print_via_ssh
-from printer import Printer
+from src.ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
+from src.configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
+from src.get_printer_list import get_printer_list
+from src.print_via_ssh import print_via_ssh
+from src.printer import Printer
 
 
 def validate_page_split(ctx, param, page_split):
