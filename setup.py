@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="printit-vidde",
-    version="1.2.0",
+    version="1.2.1",
     author="Vidar Magnusson",
     author_email="printit@vidarmagnusson.com",
     description="A printing utiliy for chalmers university printers",
@@ -11,7 +11,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points="""
     [console_scripts]
-    printit = src.cli:print_file_to_printer
+    printit = src.cli:cli
     """,
     classifiers=[
         "Programming Language :: Python :: 3",
