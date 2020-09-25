@@ -8,7 +8,7 @@ setuptools.setup(
     description="A printing utiliy for chalmers university printers",
     long_description="",
     url="https://github.com/viddem/printit",
-    packages=setuptools.find_packages(),
+    packages=["src"],
     entry_points="""
     [console_scripts]
     printit = src.cli:cli
