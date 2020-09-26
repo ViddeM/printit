@@ -90,6 +90,8 @@ def get_printers_dict(printers: List[Printer], search: str) -> Dict[int, Printer
             to_search = "{0}{1}".format(printer.printer.lower(), printer.location.lower())
             if search in to_search:
                 filtered_printers.append(printer)
+    else:
+        filtered_printers = printers
 
     printer_dict = dict()
     for i in range(len(filtered_printers) - 1, -1, -1):

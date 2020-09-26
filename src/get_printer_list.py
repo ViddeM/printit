@@ -3,14 +3,13 @@ from typing import List
 import requests
 from lxml import etree
 
+from src.configuration import PRINTER_LIST_URL
 from src.printer import Printer
 
 
 def get_printer_list() -> List[Printer]:
-    printer_list_url = "https://print.chalmers.se/public/pls.cgi"
-
     try:
-        resp = requests.get(printer_list_url)
+        resp = requests.get(PRINTER_LIST_URL)
     except requests.RequestException:
         return []
 
