@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 import click
 from src.PrinterOptions import get_options
 
 from src.ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
 from src.configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
+from src.get_pq import get_pq
 from src.get_printer_list import get_printer_list
 from src.print_via_ssh import print_via_ssh
 from src.printer import Printer
@@ -64,8 +65,7 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
 
         printer = printer_res.data
 
-    username = click.prompt("Enter your chalmers cid", type=str)
-    password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
+    username, password = get_account_details()
 
     options_res = get_options(pages, gray_scale, two_sided, wrap_short, page_range[0], page_range[1], page_split,
                               horizontal)
@@ -81,6 +81,22 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
             click.echo("Print successful!")
     else:
         click.echo("Invalid printer {0}".format(printer))
+
+
+@cli.command("pq")
+def print_pq():
+    username, password = get_account_details()
+    pq_res = get_pq(username, password)
+    if pq_res.is_error:
+        click.echo(pq_res.message)
+        exit(-1)
+    click.echo("Your PQ is {0}".format(pq_res.data))
+
+
+def get_account_details() -> Tuple[str, str]:
+    username = click.prompt("Enter your chalmers cid", type=str)
+    password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
+    return username, password
 
 
 def get_printers_dict(printers: List[Printer], search: str) -> Dict[int, Printer]:
