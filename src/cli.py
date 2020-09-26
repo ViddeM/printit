@@ -62,6 +62,8 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
             click.echo(printer_res.message)
             exit(-1)
 
+        printer = printer_res.data
+
     username = click.prompt("Enter your chalmers cid", type=str)
     password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
 
@@ -138,11 +140,12 @@ def select_printer(printers: List[Printer], search: str) -> ResultWithData[str]:
 
     while True:
         printer_num = click.prompt("Select printer", type=int)
+        number = printer_num - 1
 
-        if printer_num not in printer_dict:
+        if number not in printer_dict:
             click.echo("Number must be one of the above")
         else:
-            return get_result_with_data(printer_dict[printer_num].printer)
+            return get_result_with_data(printer_dict[number].printer)
 
 
 def printer_exists(printer, printers: List[Printer]) -> bool:

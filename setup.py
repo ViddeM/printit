@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="printit-vidde",
-    version="1.2.4",
+    version="1.2.5",
     author="Vidar Magnusson",
     author_email="printit@vidarmagnusson.com",
     description="A printing utiliy for chalmers university printers",
