@@ -21,7 +21,11 @@ def get_pq(username: str, password: str) -> ResultWithData[str]:
     pos = -1
     for i, c in enumerate(row_text):
         if c.isdigit():
-            pos = i
+            prev = i - 1
+            if row_text[prev] == "-":
+                pos = prev
+            else:
+                pos = i
             break
 
     if pos < 0:
