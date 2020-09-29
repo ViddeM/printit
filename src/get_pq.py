@@ -13,6 +13,8 @@ xpath = 'string(//tr[contains(.,"Student Quota")][1])'
 def get_pq(username: str, password: str) -> ResultWithData[str]:
     response = requests.get(PQ_URL, auth=HTTPBasicAuth(username=username, password=password))
     if response.status_code != 200:
+        if response.status_code == 401:
+            return get_result_with_error("Invalid cid or password")
         return get_result_with_error("Unable to retrieve PQ data, status code {0}".format(response.status_code))
 
     tree = html.fromstring(response.content)
