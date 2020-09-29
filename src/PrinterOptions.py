@@ -23,8 +23,7 @@ class PrinterOptions:
         if self.gray_scale:
             string += " -o 'ColorMode=Gray' -o 'ColorMode=False'"
 
-        if not self.wrap_long_edge == SidesEnum.one_sided:
-            string += " -o sides={0}".format(self.wrap_long_edge.value)
+        string += " -o sides={0}".format(self.wrap_long_edge.value)
 
         if self.page_range_start >= 0 and self.page_range_end >= 0:
             string += " -o {0}-{1}".format(self.page_range_start, self.page_range_end)
