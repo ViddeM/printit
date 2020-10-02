@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import click
-import keyring
+# import keyring
 
 from src.ResultWithData import ResultWithData
 
@@ -24,7 +24,7 @@ def set_password(cid: str) -> ResultWithData[str]:
     password = prompt_password()
     if cid == "":
         cid = prompt_cid()
-    keyring.set_password("printit-git", cid, password)
+    # keyring.set_password("printit-git", cid, password)
     return ""
 
 
