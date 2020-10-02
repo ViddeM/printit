@@ -14,10 +14,13 @@ def print_via_ssh(filename: str, printer_name: str, username: str, password: str
 
     try:
         ssh.connect(SERVER, username=username, password=password)
-    except AuthenticationException:
-        return get_result_with_error("Invalid username/password")
-    except SSHException:
-        ssh.connect(FALLBACK_SERVER, username=username, password=password)
+    except (AuthenticationException, SSHException):
+        try:
+            ssh.connect(FALLBACK_SERVER, username=username, password=password)
+        except AuthenticationException:
+            return get_result_with_error("Invalid username/password")
+        except Exception:
+            return get_result_with_error("Unable to connect to server")
 
     scp = SCPClient(ssh.get_transport())
 

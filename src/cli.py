@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-from typing import List, Dict, Tuple
 
 import click
-from src.PrinterOptions import get_options
 
-from src.ResultWithData import ResultWithData, get_result_with_error, get_result_with_data
+from src.PrinterOptions import get_options
+from src.config_handler import set_config
 from src.configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
+from src.credentials import get_account_details
 from src.get_pq import get_pq
-from src.get_printer_list import get_printer_list
 from src.print_via_ssh import print_via_ssh
-from src.printer import Printer
+from src.printers_utils import get_printer_list, print_printers, get_printers_dict, select_printer, printer_exists
 
 
 def validate_page_split(ctx, param, page_split):
@@ -93,79 +92,32 @@ def print_pq():
     click.echo("Your PQ is {0}".format(pq_res.data))
 
 
-def get_account_details() -> Tuple[str, str]:
-    username = click.prompt("Enter your chalmers cid", type=str)
-    password = click.prompt("Enter your chalmers password", type=str, hide_input=True)
-    return username, password
+# @cli.group("config")
+# def config():
+#     pass
+#
+#
+# @config.command("set")
+# @click.option("-c", "--cid", type=str, default="", help="The chalmers cid to set for (will prompt if not passed)")
+# @click.argument("config", type=str)
+# def config_set(cid: str, config: str):
+#     result = set_config(config, cid)
+#     if result.is_error:
+#         click.echo("Error {0}".format(result.message))
+#         exit(-1)
+#
+#     click.echo(result.data)
+#
+#
+# @config.command("get")
+# def config_get():
+#     click.echo("Not implemented yet :(")
+#     pass
+#
+#
+# @config.command("clear")
+# def config_clear():
+#     click.echo("Not implemented yet :(")
+#     pass
 
 
-def get_printers_dict(printers: List[Printer], search: str) -> Dict[int, Printer]:
-    search = search.lower()
-    filtered_printers = []
-    # filter the list on the search term
-    if search != "":
-        for printer in printers:
-            to_search = "{0}{1}".format(printer.printer.lower(), printer.location.lower())
-            if search in to_search:
-                filtered_printers.append(printer)
-    else:
-        filtered_printers = printers
-
-    printer_dict = dict()
-    for i in range(len(filtered_printers) - 1, -1, -1):
-        printer_dict[i] = filtered_printers[i]
-
-    return printer_dict
-
-
-def get_longest_name(printer_dict: Dict[int, Printer]) -> int:
-    longest_name = 0
-    for printer in printer_dict.values():
-        printer_length = len(printer.printer)
-        if printer_length > longest_name:
-            longest_name = printer_length
-
-    return longest_name
-
-
-def print_printers(printer_dict: Dict[int, Printer]) -> ResultWithData[str]:
-    if len(printer_dict) == 0:
-        return get_result_with_error("No printers matched the search")
-
-    longest_name = get_longest_name(printer_dict)
-    longest_number = len(str(len(printer_dict)))
-
-    for index in printer_dict:
-        printer = printer_dict[index]
-        printer_text = "({0})".format(index + 1).rjust(longest_number + 2, " ")
-        printer_text += " {0} ".format(printer.printer).ljust(longest_name + 2, " ")
-        printer_text += " |- {0}".format(printer.location)
-
-        click.echo(printer_text)
-    return get_result_with_data("")
-
-
-def select_printer(printers: List[Printer], search: str) -> ResultWithData[str]:
-    # convert the list of printers to a dictionary of int -> Printer
-    printer_dict = get_printers_dict(printers, search)
-    res = print_printers(printer_dict)
-    if res.is_error:
-        return get_result_with_error(res.message)
-
-    click.echo("===========================")
-
-    while True:
-        printer_num = click.prompt("Select printer", type=int)
-        number = printer_num - 1
-
-        if number not in printer_dict:
-            click.echo("Number must be one of the above")
-        else:
-            return get_result_with_data(printer_dict[number].printer)
-
-
-def printer_exists(printer, printers: List[Printer]) -> bool:
-    for pr in printers:
-        if pr.printer == printer:
-            return True
-    return False
