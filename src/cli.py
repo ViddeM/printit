@@ -5,7 +5,7 @@ import click
 from src.PrinterOptions import get_options
 from src.config_handler import set_config
 from src.configuration import ALLOWED_PAGE_SPLITS, ALLOWED_PAGE_SPLITS_STR
-from src.credentials import get_account_details
+from src.credentials import get_account_details, prompt_password
 from src.get_pq import get_pq
 from src.print_via_ssh import print_via_ssh
 from src.printers_utils import get_printer_list, print_printers, get_printers_dict, select_printer, printer_exists
@@ -46,9 +46,10 @@ def list_printers():
               help="How many pages that should fit on each paper, must be one of the following {0}".format(
                   ALLOWED_PAGE_SPLITS_STR))
 @click.option("-h", "--horizontal", is_flag=True, default=False, help="Print the page horizontally (landscape)")
+@click.option("-c", "--cid", help="The chalmers id to use for printing")
 @click.argument("filename", type=click.Path(exists=True))
 def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_short, page_range, page_split,
-               horizontal):
+               horizontal, cid):
     """A simple program that prints the given file on the given chalmers printer"""
     printers = get_printer_list()
     if len(printers) == 0:
@@ -64,7 +65,10 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
 
         printer = printer_res.data
 
-    username, password = get_account_details()
+    if cid is None:
+        cid, password = get_account_details()
+    else:
+        password = prompt_password()
 
     options_res = get_options(pages, gray_scale, two_sided, wrap_short, page_range[0], page_range[1], page_split,
                               horizontal)
@@ -73,7 +77,7 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
         exit(-1)
 
     if printer_exists(printer, printers):
-        print_res = print_via_ssh(filename, printer, username, password, options_res.data)
+        print_res = print_via_ssh(filename, printer, cid, password, options_res.data)
         if print_res.is_error:
             click.echo("Failed to print: \n{0}".format(print_res.message))
         else:
@@ -83,9 +87,13 @@ def print_file(filename, printer, pages, search, gray_scale, two_sided, wrap_sho
 
 
 @cli.command("pq")
-def print_pq():
-    username, password = get_account_details()
-    pq_res = get_pq(username, password)
+@click.option("-c", "--cid", help="The chalmers id to use for printing")
+def print_pq(cid):
+    if cid is None:
+        cid, password = get_account_details()
+    else:
+        password = prompt_password()
+    pq_res = get_pq(cid, password)
     if pq_res.is_error:
         click.echo(pq_res.message)
         exit(-1)
