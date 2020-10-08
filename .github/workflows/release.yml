@@ -1,0 +1,27 @@
+# This is a basic workflow that is manually triggered
+
+name: release
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+          
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  create_github_release:
+    name: 'Create Github release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Printit ${{ github.ref }}
+          draft: true
+          prerelease: false
