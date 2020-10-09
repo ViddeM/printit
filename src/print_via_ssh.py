@@ -13,10 +13,10 @@ def print_via_ssh(filename: str, printer_name: str, username: str, password: str
     print("Connecting to server")
 
     try:
-        ssh.connect(SERVER, username=username, password=password)
+        ssh.connect(FALLBACK_SERVER, username=username, password=password)
     except (AuthenticationException, SSHException):
         try:
-            ssh.connect(FALLBACK_SERVER, username=username, password=password)
+            ssh.connect(SERVER, username=username, password=password)
         except AuthenticationException:
             return get_result_with_error("Invalid username/password")
         except Exception:
