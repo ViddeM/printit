@@ -28,7 +28,7 @@ def print_via_ssh(filename: str, printer_name: str, username: str, password: str
     scp.put(filename, recursive=False, remote_path=TO_PRINT_FILENAME)
     print("Finished uploading file")
 
-    command = "/bin/lpr -P '{0}' -J {1} {2} {3}".format(
+    command = "lpr -P '{0}' -J {1} {2} {3}".format(
             printer_name, JOB_NAME, options.as_string(), TO_PRINT_FILENAME)
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(command)
 
